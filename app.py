@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from inventory import inventory
+from external_api import get_product
 
 app = Flask(__name__)
 
@@ -25,6 +26,8 @@ def get_item(item_id):
 def add_item():
     new_item = request.json
 
+    new_item["id"] = len(inventory) + 1
+
     inventory.append(new_item)
 
     return new_item, 201
@@ -35,10 +38,13 @@ def update_item(item_id):
     updates = request.json
 
     for item in inventory:
-
         if item["id"] == item_id:
 
-            item.update(updates)
+            if "price" in updates:
+                item["price"] = updates["price"]
+
+            if "stock" in updates:
+                item["stock"] = updates["stock"]
 
             return item
 
@@ -53,9 +59,16 @@ def delete_item(item_id):
 
             inventory.remove(item)
 
-            return {"message": "Item deleted"}
+            return {
+                "message": "Item deleted successfully"
+            }
 
     return {"error": "Item not found"}, 404
+
+@app.route("/lookup/<barcode>")
+def lookup_product(barcode):
+    data = get_product(barcode)
+    return data
 
 if __name__ == "__main__":
     app.run(debug=True)
