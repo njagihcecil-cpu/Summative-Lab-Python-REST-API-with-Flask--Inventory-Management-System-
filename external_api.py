@@ -1,7 +1,7 @@
 import requests
 
 def get_product(barcode):
-    url = f"https://world.openfoodfacts.org/api/v2/product/{barcode}"
+    url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
 
     response = requests.get(url)
 

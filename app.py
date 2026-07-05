@@ -67,8 +67,21 @@ def delete_item(item_id):
 
 @app.route("/lookup/<barcode>")
 def lookup_product(barcode):
+
     data = get_product(barcode)
-    return data
+
+    if data and data.get("status") == 1:
+
+        product = data["product"]
+
+        return {
+            "barcode": barcode,
+            "name": product.get("product_name"),
+            "brand": product.get("brands"),
+            "ingredients": product.get("ingredients_text")
+        }
+
+    return {"error": "Product not found"}, 404
 
 if __name__ == "__main__":
     app.run(debug=True)
